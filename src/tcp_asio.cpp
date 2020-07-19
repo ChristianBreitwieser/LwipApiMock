@@ -56,7 +56,7 @@ public:
 
     void async_start_accept() {
         boost::shared_ptr<tcp_asio_pcb> newPCB(new tcp_asio_pcb(nullptr, recvbuffer_size, sndbuffer_size));
-        newPCB->socket.reset(new tcp::socket(acceptor->get_io_service()));
+        newPCB->socket.reset(new tcp::socket(*GetIOService()));
         acceptor->async_accept(*newPCB->socket, boost::bind(&tcp_asio_pcb::async_handle_accept, this, newPCB,
                                                             boost::asio::placeholders::error));
     }
@@ -118,7 +118,7 @@ public:
 
     void async_start_poll_timer(uint8_t interval) {
         if (!timer) {
-            timer.reset(new boost::asio::high_resolution_timer(socket->get_io_context()));
+            timer.reset(new boost::asio::high_resolution_timer(*GetIOService()));
         }
 
         timer->expires_after(500 * std::chrono::milliseconds(interval));
